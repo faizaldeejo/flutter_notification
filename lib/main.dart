@@ -5,12 +5,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_notification/firebase_options.dart';
 import 'package:flutter_notification/push_notification_service.dart';
 
-void main() async{
+
+late PushNotificationService pushNotificationService;
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dotenv.load(fileName: '.env');
 
-  final PushNotificationService pushNotificationService = PushNotificationService();
+  pushNotificationService =
+      PushNotificationService();
 
   await pushNotificationService.initFCM();
 
@@ -18,7 +21,7 @@ void main() async{
   runApp(const MyApp());
 }
 
-Future<void> backgroundMessageHandler(RemoteMessage message)async{
+Future<void> backgroundMessageHandler(RemoteMessage message) async {
   print('Handling a background message ${message.messageId}');
 }
 
@@ -122,18 +125,19 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: .center,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            ElevatedButton(
+              onPressed: () async {
+                pushNotificationService.sendPushNotification(
+                  // deviceToken:
+                  //     'ek2JWBmXTDmN-qLfJ5nljP:APA91bEcrdkS5aqseIFYQ119aGNSJzDz_XW70nUbnCw3tLbKcviBMCObPujPuowAT2XG0mOGsgK8et5OndP1v7iNJX98O0JhnyfweIDJhilfP16MqiHbXQU', // Replace with the actual device token
+                  title: 'Test Notification',
+                  body: 'This is a test notification from push notification service.',
+                );
+              },
+              child: Text('Click the button to send push Notification'),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
